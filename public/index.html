@@ -319,17 +319,22 @@
     btn.textContent = 'Navegando...';
 
     try {
-      const form = document.getElementById('embarque-form');
-      const formData = new FormData(form);
-      const res = await fetch('https://b7d30e00.sibforms.com/serve/MUIFALPYbLW3akTo6h0X7aWj_o4ouNBVueFYl0eo_Gg-OsQYb4Q_GImMGK6UAzv6e5gqQCxg4_KFj0n04Lqwe_2ku-hoGJTWeTkEZmqMULcYDwNTYMyg_kheCW_Q960j500BX8HGcQaLLyW8627lw52kTPrGDazAa4lK1p9Pq8VQhyWk9RGsd7cj_08ND-9ArDbciwERrfx6jgx9VA==', {
+      const res = await fetch('/subscribe', {
         method: 'POST',
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          NOME: document.getElementById('f-nome').value.trim(),
+          EMAIL: document.getElementById('f-email').value.trim(),
+          SMS: document.getElementById('f-whatsapp').value.trim(),
+          SMS__COUNTRY_CODE: document.querySelector('[name="SMS__COUNTRY_CODE"]').value
+        })
       });
-      if (res.ok || res.status === 302 || res.status === 200) {
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.ok) {
         successEl.style.display = 'block';
-        form.style.display = 'none';
+        document.getElementById('embarque-form').style.display = 'none';
       } else {
-        throw new Error('Erro no envio');
+        throw new Error(data.error || 'Erro no envio');
       }
     } catch (err) {
       errorEl.style.display = 'block';
